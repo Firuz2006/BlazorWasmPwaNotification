@@ -1,11 +1,10 @@
 using WebPush;
 
-namespace Server
+namespace Server;
+
+public interface IPushSubscriptionStore
 {
-    public interface IPushSubscriptionStore
-    {
-        Task AddAsync(PushSubscription subscription);
-        Task RemoveAsync(string endpoint);
-        Task<IEnumerable<PushSubscription>> GetAllAsync();
-    }
+    Task AddAsync(PushSubscription subscription);
+    Task RemoveAsync(string endpoint);
+    Task<IEnumerable<PushSubscription>> GetAllAsync();
 }

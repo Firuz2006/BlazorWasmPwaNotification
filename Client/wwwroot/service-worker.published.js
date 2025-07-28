@@ -8,13 +8,13 @@ self.addEventListener('fetch', event => event.respondWith(onFetch(event)));
 self.addEventListener('push', event => {
     const data = event.data ? event.data.json() : {};
     const title = data.title || 'Notification';
-    const options = { body: data.body || '', icon: 'icon-192.png', badge: 'icon-192.png' };
+    const options = {body: data.body || '', icon: 'icon-192.png', badge: 'icon-192.png'};
     event.waitUntil(self.registration.showNotification(title, options));
 });
 
 self.addEventListener('notificationclick', event => {
     event.notification.close();
-    event.waitUntil(clients.matchAll({ type: 'window' }).then(windowClients => {
+    event.waitUntil(clients.matchAll({type: 'window'}).then(windowClients => {
         for (let client of windowClients) {
             if (client.url === '/' && 'focus' in client) return client.focus();
         }
@@ -24,8 +24,8 @@ self.addEventListener('notificationclick', event => {
 
 const cacheNamePrefix = 'offline-cache-';
 const cacheName = `${cacheNamePrefix}${self.assetsManifest.version}`;
-const offlineAssetsInclude = [ /\.dll$/, /\.pdb$/, /\.wasm/, /\.html/, /\.js$/, /\.json$/, /\.css$/, /\.woff$/, /\.png$/, /\.jpe?g$/, /\.gif$/, /\.ico$/, /\.blat$/, /\.dat$/ ];
-const offlineAssetsExclude = [ /^service-worker\.js$/ ];
+const offlineAssetsInclude = [/\.dll$/, /\.pdb$/, /\.wasm/, /\.html/, /\.js$/, /\.json$/, /\.css$/, /\.woff$/, /\.png$/, /\.jpe?g$/, /\.gif$/, /\.ico$/, /\.blat$/, /\.dat$/];
+const offlineAssetsExclude = [/^service-worker\.js$/];
 
 // Replace with your base path if you are hosting on a subfolder. Ensure there is a trailing '/'.
 const base = "/";
@@ -39,7 +39,7 @@ async function onInstall(event) {
     const assetsRequests = self.assetsManifest.assets
         .filter(asset => offlineAssetsInclude.some(pattern => pattern.test(asset.url)))
         .filter(asset => !offlineAssetsExclude.some(pattern => pattern.test(asset.url)))
-        .map(asset => new Request(asset.url, { integrity: asset.hash, cache: 'no-cache' }));
+        .map(asset => new Request(asset.url, {integrity: asset.hash, cache: 'no-cache'}));
     await caches.open(cacheName).then(cache => cache.addAll(assetsRequests));
 }
 

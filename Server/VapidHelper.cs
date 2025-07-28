@@ -1,9 +1,11 @@
 using WebPush;
 
-namespace Server
+namespace Server;
+
+public static class VapidHelper
 {
-    public static class VapidHelper
+    public static VapidDetails GenerateVapidKeys()
     {
-        public static VapidDetails GenerateVapidKeys() => WebPush.VapidHelper.GenerateVapidKeys();
+        return WebPush.VapidHelper.GenerateVapidKeys();
     }
 }

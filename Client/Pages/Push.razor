@@ -10,17 +10,21 @@
 
 <p>Permission status: @permission</p>
 <button class="btn btn-primary me-2" @onclick="RequestPermission">Request Permission</button>
-<button class="btn btn-success me-2" @onclick="Subscribe" disabled="@(permission != "granted" || subscription != null)">Subscribe</button>
+<button class="btn btn-success me-2" @onclick="Subscribe" disabled="@(permission != "granted" || subscription != null)">
+    Subscribe
+</button>
 <button class="btn btn-danger me-2" @onclick="Unsubscribe" disabled="@(subscription == null)">Unsubscribe</button>
 
 <div class="mt-4">
     <div class="mb-2">
-        <input class="form-control" placeholder="Title" @bind="title" />
+        <input class="form-control" placeholder="Title" @bind="title"/>
     </div>
     <div class="mb-2">
         <textarea class="form-control" placeholder="Body" @bind="body"></textarea>
     </div>
-    <button class="btn btn-primary" @onclick="SendPush" disabled="@(string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(body))">Send Push</button>
+    <button class="btn btn-primary" @onclick="SendPush"
+            disabled="@(string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(body))">Send Push
+    </button>
 </div>
 
 @code {
@@ -69,4 +73,5 @@
         title = string.Empty;
         body = string.Empty;
     }
+
 }

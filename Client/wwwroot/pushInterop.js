@@ -5,15 +5,15 @@ window.pushInterop = {
     urlBase64ToUint8Array: (base64String) => {
         // Handle URL-safe base64
         let base64 = base64String.replace(/-/g, '+').replace(/_/g, '/');
-        
+
         // Add padding if needed
         const padLength = (4 - (base64.length % 4)) % 4;
         base64 += '='.repeat(padLength);
-        
+
         try {
             const rawData = window.atob(base64);
             const outputArray = new Uint8Array(rawData.length);
-            
+
             for (let i = 0; i < rawData.length; ++i) {
                 outputArray[i] = rawData.charCodeAt(i);
             }
@@ -34,7 +34,7 @@ window.pushInterop = {
         const rawAuth = sub.getKey('auth');
         const key = rawKey ? btoa(String.fromCharCode(...new Uint8Array(rawKey))) : '';
         const auth = rawAuth ? btoa(String.fromCharCode(...new Uint8Array(rawAuth))) : '';
-        return { Endpoint: sub.endpoint, Keys: { P256dh: key, Auth: auth } };
+        return {Endpoint: sub.endpoint, Keys: {P256dh: key, Auth: auth}};
     },
     unsubscribeUser: async () => {
         const registration = await navigator.serviceWorker.ready;
@@ -54,6 +54,6 @@ window.pushInterop = {
         const rawAuth = sub.getKey('auth');
         const key = rawKey ? btoa(String.fromCharCode(...new Uint8Array(rawKey))) : '';
         const auth = rawAuth ? btoa(String.fromCharCode(...new Uint8Array(rawAuth))) : '';
-        return { Endpoint: sub.endpoint, Keys: { P256dh: key, Auth: auth } };
+        return {Endpoint: sub.endpoint, Keys: {P256dh: key, Auth: auth}};
     }
 };
