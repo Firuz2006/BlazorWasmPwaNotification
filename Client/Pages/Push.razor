@@ -1,0 +1,72 @@
+@page "/push"
+@using Client.Models
+@inject HttpClient Http
+@inject IJSRuntime JS
+@inject IConfiguration Configuration
+
+<PageTitle>Push Notifications</PageTitle>
+
+<h3>Push Notifications</h3>
+
+<p>Permission status: @permission</p>
+<button class="btn btn-primary me-2" @onclick="RequestPermission">Request Permission</button>
+<button class="btn btn-success me-2" @onclick="Subscribe" disabled="@(permission != "granted" || subscription != null)">Subscribe</button>
+<button class="btn btn-danger me-2" @onclick="Unsubscribe" disabled="@(subscription == null)">Unsubscribe</button>
+
+<div class="mt-4">
+    <div class="mb-2">
+        <input class="form-control" placeholder="Title" @bind="title" />
+    </div>
+    <div class="mb-2">
+        <textarea class="form-control" placeholder="Body" @bind="body"></textarea>
+    </div>
+    <button class="btn btn-primary" @onclick="SendPush" disabled="@(string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(body))">Send Push</button>
+</div>
+
+@code {
+    private string permission = string.Empty;
+    private PushSubscriptionDto? subscription;
+    private string vapidPublicKey = string.Empty;
+    private string title = string.Empty;
+    private string body = string.Empty;
+    private string apiBaseUrl = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        apiBaseUrl = Configuration["ApiBaseUrl"] ?? "http://localhost:5293";
+        vapidPublicKey = await Http.GetStringAsync($"{apiBaseUrl}/vapidPublicKey");
+        permission = await JS.InvokeAsync<string>("pushInterop.requestNotificationPermission");
+        subscription = await JS.InvokeAsync<PushSubscriptionDto?>("pushInterop.getSubscription");
+    }
+
+    private async Task RequestPermission()
+    {
+        permission = await JS.InvokeAsync<string>("pushInterop.requestNotificationPermission");
+    }
+
+    private async Task Subscribe()
+    {
+        if (subscription != null) return;
+        var sub = await JS.InvokeAsync<PushSubscriptionDto>("pushInterop.subscribeUser", vapidPublicKey);
+        await Http.PostAsJsonAsync($"{apiBaseUrl}/api/push/subscribe", sub);
+        subscription = sub;
+    }
+
+    private async Task Unsubscribe()
+    {
+        var endpoint = await JS.InvokeAsync<string?>("pushInterop.unsubscribeUser");
+        if (endpoint != null)
+        {
+            await Http.PostAsJsonAsync($"{apiBaseUrl}/api/push/unsubscribe", endpoint);
+            subscription = null;
+        }
+    }
+
+    private async Task SendPush()
+    {
+        var request = new NotificationRequest(title, body);
+        await Http.PostAsJsonAsync($"{apiBaseUrl}/api/push/push", request);
+        title = string.Empty;
+        body = string.Empty;
+    }
+}
